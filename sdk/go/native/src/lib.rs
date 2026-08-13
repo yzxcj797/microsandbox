@@ -3218,6 +3218,7 @@ struct SshClientOpts {
     user: Option<String>,
     term: Option<String>,
     sftp: Option<bool>,
+    inactivity_timeout_secs: Option<u64>,
 }
 
 #[derive(serde::Deserialize, Default)]
@@ -3226,6 +3227,7 @@ struct SshServerOpts {
     authorized_keys_path: Option<PathBuf>,
     user: Option<String>,
     sftp: Option<bool>,
+    inactivity_timeout_secs: Option<u64>,
 }
 
 #[derive(serde::Deserialize, Default)]
@@ -3265,6 +3267,9 @@ pub unsafe extern "C" fn msb_sandbox_ssh_connect(
                     }
                     if let Some(sftp) = opts.sftp {
                         builder = builder.sftp(sftp);
+                    }
+                    if let Some(timeout_secs) = opts.inactivity_timeout_secs {
+                        builder = builder.inactivity_timeout(Duration::from_secs(timeout_secs));
                     }
                     builder
                 })
@@ -3308,6 +3313,9 @@ pub unsafe extern "C" fn msb_sandbox_ssh_server(
                     }
                     if let Some(sftp) = opts.sftp {
                         builder = builder.sftp(sftp);
+                    }
+                    if let Some(timeout_secs) = opts.inactivity_timeout_secs {
+                        builder = builder.inactivity_timeout(Duration::from_secs(timeout_secs));
                     }
                     builder
                 })

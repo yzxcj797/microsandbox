@@ -103,14 +103,14 @@ let client = sb.ssh().connect_with(|opts| opts
 
 </Accordion>
 
-Connect a native in-process SSH client with custom options. The closure configures the login user, terminal name, and whether SFTP is enabled on the internal server.
+Connect a native in-process SSH client with custom options. The closure configures the login user, terminal name, whether SFTP is enabled on the internal server, and the SSH inactivity timeout.
 
 <p className="msb-label">Parameters</p>
 
 <div className="msb-params">
   <div className="msb-param">
     <div className="msb-param-key"><code>f</code><a className="msb-type" href="#sshclientoptionsbuilder">FnOnce(SshClientOptionsBuilder)</a></div>
-    <div className="msb-param-desc">Configure user, terminal, and SFTP support.</div>
+    <div className="msb-param-desc">Configure user, terminal, SFTP support, and the inactivity timeout.</div>
   </div>
 </div>
 
@@ -216,14 +216,14 @@ let server = sb.ssh().server_with(|opts| opts
 
 </Accordion>
 
-Prepare a server endpoint with custom host-key, authorization, guest-user, or SFTP options. If no authorized keys are configured, the default authorized-keys file is loaded; an empty key set is an error.
+Prepare a server endpoint with custom host-key, authorization, guest-user, SFTP, or inactivity-timeout options. If no authorized keys are configured, the default authorized-keys file is loaded; an empty key set is an error.
 
 <p className="msb-label">Parameters</p>
 
 <div className="msb-params">
   <div className="msb-param">
     <div className="msb-param-key"><code>f</code><a className="msb-type" href="#sshserveroptionsbuilder">FnOnce(SshServerOptionsBuilder)</a></div>
-    <div className="msb-param-desc">Configure host key, authorized keys, guest user, and SFTP.</div>
+    <div className="msb-param-desc">Configure host key, authorized keys, guest user, SFTP, and the inactivity timeout.</div>
   </div>
 </div>
 
@@ -634,13 +634,15 @@ Ordered duplex stream backed by this process's stdin and stdout. Implements `Asy
 
 <p className="msb-backref">Used by <a href="#ssh-connect_with">ssh.connect_with()</a></p>
 
-Builder for SSH client options. Defaults: user `root`, terminal from `$TERM` (falling back to `xterm`), SFTP enabled.
+Builder for SSH client options. Defaults: user `root`, terminal from `$TERM` (falling back to `xterm`), SFTP enabled, and the global SSH inactivity timeout.
 
 | Method | Parameters | Description |
 |--------|------------|-------------|
 | `user()` | `impl Into<String>` | SSH login user. Default `root`. |
 | `term()` | `impl Into<String>` | Terminal name for interactive sessions. |
 | `sftp()` | `bool` | Enable or disable SFTP on the internal server. Default `true`. |
+| `inactivity_timeout()` | `Duration` | Override the internal server inactivity timeout. `Duration::ZERO` disables it. |
+| `disable_inactivity_timeout()` | | Disable the internal server inactivity timeout. |
 | `build()` | | Finalize the options. |
 
 ### SshExecOptionsBuilder
@@ -670,7 +672,7 @@ Builder for interactive SSH attach options. Default terminal comes from `$TERM` 
 
 <p className="msb-backref">Used by <a href="#ssh-server_with">ssh.server_with()</a></p>
 
-Builder for SSH server options. SFTP is enabled by default; when no authorized keys are provided, the default authorized-keys file is loaded.
+Builder for SSH server options. SFTP is enabled by default; the inactivity timeout inherits the global SSH setting; when no authorized keys are provided, the default authorized-keys file is loaded.
 
 | Method | Parameters | Description |
 |--------|------------|-------------|
@@ -680,4 +682,6 @@ Builder for SSH server options. SFTP is enabled by default; when no authorized k
 | `authorized_key()` | `impl Into<String>` | Add one in-memory authorized public key. |
 | `user()` | `impl Into<String>` | Override the guest user used for exec requests. |
 | `sftp()` | `bool` | Enable or disable SFTP. Default `true`. |
+| `inactivity_timeout()` | `Duration` | Override the SSH inactivity timeout. `Duration::ZERO` disables it. |
+| `disable_inactivity_timeout()` | | Disable the SSH inactivity timeout. |
 | `build()` | | Finalize the options. |

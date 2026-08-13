@@ -21,6 +21,8 @@ export interface SshClientOptions {
   readonly user?: string;
   readonly term?: string;
   readonly sftp?: boolean;
+  /** Disconnect after this many seconds without SSH traffic. Use 0 to disable. */
+  readonly inactivityTimeoutSecs?: number;
 }
 
 export interface SshExecOptions {
@@ -37,6 +39,8 @@ export interface SshServerOptions {
   readonly authorizedKeysPath?: string;
   readonly user?: string;
   readonly sftp?: boolean;
+  /** Disconnect after this many seconds without SSH traffic. Use 0 to disable. */
+  readonly inactivityTimeoutSecs?: number;
 }
 
 export class SandboxSshOps {
@@ -171,6 +175,7 @@ export function sshClientOptionsToNapi(
     user: opts.user,
     term: opts.term,
     sftp: opts.sftp,
+    inactivityTimeoutSecs: opts.inactivityTimeoutSecs,
   };
 }
 
@@ -202,6 +207,7 @@ export function sshServerOptionsToNapi(
     authorizedKeysPath: opts.authorizedKeysPath,
     user: opts.user,
     sftp: opts.sftp,
+    inactivityTimeoutSecs: opts.inactivityTimeoutSecs,
   };
 }
 
